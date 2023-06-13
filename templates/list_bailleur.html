@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block enfant %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md">
+                <h2>Bailleur</h2>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                  <a href="{{ url_for('add_from_bailleur') }}" class="btn btn-primary btn-xs">ajoute</a>
+                </div>
+               <br>
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>N°</th>
+                        <th>Nom du bailleur </th>
+                        <th>Description</th>
+                        <th>Date de collaboration</th>
+                        <th>Operation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in bailleur %}
+                      <tr>
+                          <td>{{ row.0 }}</td>
+                          <td>{{ row.1 }}</td>
+                          <td>{{ row.2 }}</td>
+                          <td>{{ row.3 }}</td>
+                        <td>
+                            <a class="btn btn-warning btn-xs" href="/upd_bailleur/{{ row.0 }}">modifier</a>
+                            <a href="/delete_bailleur/{{ row.0 }}" class="btn btn-danger btn-xs" onclick="return confirm(' veux tu vraiment  supprimer ?')">Supprimer</a>
+                        </td>
+                      </tr>
+
+                        {%endfor %}
+                    </tbody>
+                  </table>
+            </div>
+            <div class="pagination justify-content-center">
+              {{ pagination.links }}
+            </div>
+        </div>
+    </div>
+
+
+
+    
+
+{% endblock %}

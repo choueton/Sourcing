@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block enfant %}
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-sm-12 col-xl-6 ">
+                <div class="bg-secondary rounded h-100 p-4 ">
+                    <h6 class="mb-4">Floating Label</h6>
+                    <form action="{{ url_for('add_bailleur') }}" method="POST" >
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"name="nom_bailleur" required>
+                            <label for="floatingInput">Nom du bailleur</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="int" class="form-control" id="floatingInput" placeholder="name@example.com" name="description" required>
+                            <label for="floatingInput">Description</label>
+                        </div>
+                        <div class="form-floating">
+                            <button type="submit" class="btn btn-primary">modifier</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
