@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block enfant %}
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-sm-12 col-xl-6 ">
+                <div class="bg-secondary rounded h-100 p-4 ">
+                    <h6 class="mb-4">Floating Label</h6>
+                    <form action="{{ url_for('add_promo') }}" method="POST" >
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="nom_promo" required>
+                            <label for="floatingInput">Nom de promo</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_bailleur" required>
+                                <option selected disabled value="">choos</option>
+                                {% for row in bailleur %}
+                                <option value="{{ row.0 }}">{{ row.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="floatingSelect">nom de bailleur</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_formation" required>
+                                <option selected disabled value="">choos</option>
+                                {% for row in formation %}
+                                <option value="{{ row.0 }}">{{ row.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="floatingSelect">nom de formation</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="debut_promo" required>
+                            <label for="floatingInput">debut de promo</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="fin_promo" required>
+                            <label for="floatingInput">fini de promo</label>
+                        </div>
+                        <div class="form-floating">
+                            <button type="submit" class="btn btn-primary">enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
