@@ -35,8 +35,20 @@ def add_from_promo():
     cur.close()
     return render_template('add_from_promo.html', formation=formation, bailleur=bailleur)
 
+
+@app.route('/add_from_simplonien')
+def add_from_simplonien():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM promo")
+    promo = cur.fetchall()
+    cur.close()
+    return render_template('add_from_simplonien.html',promo=promo)
+
 ############################################################
-################################################################
+
+
+
+############################################################
 
 @app.route('/')
 def index():
@@ -173,7 +185,18 @@ def delete_formation(id_data):
 @app.route('/promo')
 def list_promo():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT promo.id, promo.nom_promo, bailleur.nom_bailleur, formation.nom_formation, promo.debut_promo, promo.fin_promo FROM bailleur JOIN promo ON bailleur.id = promo.id_bailleur JOIN formation ON formation.id = promo.id_formation")
+    cur.execute("""
+        SELECT 
+            promo.id, promo.nom_promo, bailleur.nom_bailleur, 
+            formation.nom_formation, promo.debut_promo, 
+            promo.fin_promo 
+        FROM 
+            bailleur 
+        JOIN 
+            promo ON bailleur.id = promo.id_bailleur 
+        JOIN 
+            formation ON formation.id = promo.id_formation
+    """)
     data = cur.fetchall()
     cur.close()
     return render_template('list_promo.html',promo=data)
@@ -207,8 +230,7 @@ def add_promo():
 def upd_promo(id):
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT promo.id, promo.nom_promo, bailleur.nom_bailleur, formation.nom_formation, promo.debut_promo, promo.fin_promo FROM bailleur JOIN promo ON bailleur.id = promo.id_bailleur JOIN formation ON formation.id = promo.id_formation WHERE promo.id=%s", (id,))
-    # cur.execute("SELECT * FROM promo WHERE id=%s", (id,))
+    cur.execute("SELECT promo.id, promo.nom_promo, bailleur.nom_bailleur, formation.nom_formation, promo.debut_promo, promo.fin_promo FROM bailleur JOIN promo ON bailleur.id = promo.id_bailleur JOIN formation ON formation.id = promo.id_formation WHERE promo.id=%s",(id,))
     promo_info = cur.fetchall()
     cur.execute("SELECT * FROM bailleur")
     bailleur = cur.fetchall()
@@ -239,6 +261,99 @@ def delete_promo(id_data):
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('list_promo'))
+
+####################################################################################################################
+
+#simplonien
+@app.route('/simplonien')
+def list_simplonien():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            simplonien.id, simplonien.nom, simplonien.prenom, simplonien.email, 
+            simplonien.telephone, promo.nom_promo, formation.nom_formation, 
+            simplonien.tuteur, simplonien.residance 
+        FROM 
+            promo 
+        JOIN 
+            simplonien ON promo.id = simplonien.id_promo 
+        JOIN 
+            formation ON formation.id = promo.id_formation
+    """)
+    data = cur.fetchall()
+    cur.close()
+    return render_template('list_simplonien.html', simplonien=data)
+
+@app.route('/add_simplonien', methods=["POST"])
+def add_simplonien():
+
+    # Obtenir les données du formulaire
+    nom = request.form['nom']
+    prenom = request.form['prenom']
+    email = request.form['email']
+    telephone = request.form['telephone']
+    id_promo = request.form['id_promo']
+    tuteur = request.form['tuteur']
+    residance = request.form['residance']
+    # Établir une connexion à la base de données
+    cur = mysql.connection.cursor()
+
+    # Insérer les données dans la table 'simplonien'
+    cur.execute("INSERT INTO simplonien (nom, prenom, email, telephone, id_promo, tuteur, residance) VALUES (%s, %s, %s, %s, %s, %s, %s)", (nom, prenom, email, telephone, id_promo, tuteur, residance))
+
+    # Valider la transaction
+    mysql.connection.commit()
+
+    # Fermer la connexion à la base de données
+    cur.close()
+
+    # Rediriger vers la page 'simplonien'
+    return redirect(url_for('list_simplonien'))
+
+@app.route('/upd_simplonien/<int:id>', methods=["GET","POST"])
+def upd_simplonien(id):
+
+    cur = mysql.connection.cursor()
+    # cur.execute("SELECT promo.id, promo.nom_promo, bailleur.nom_bailleur, formation.nom_formation, promo.debut_promo, promo.fin_promo FROM bailleur JOIN promo ON bailleur.id = promo.id_bailleur JOIN formation ON formation.id = promo.id_formation WHERE promo.id=%s", (id,))
+    cur.execute("""
+        SELECT 
+            simplonien.id, simplonien.nom, simplonien.prenom, simplonien.email, 
+            simplonien.telephone, promo.nom_promo, simplonien.tuteur, simplonien.residance 
+        FROM 
+            promo 
+        JOIN 
+            simplonien ON promo.id = simplonien.id_promo
+        WHERE 
+            simplonien.id=%s
+    """, (id,))
+    simplonien_info = cur.fetchall()
+    cur.close()
+
+    if request.method == "POST":
+
+    # Obtenir les données du formulaire
+        nom = request.form['nom']
+        prenom = request.form['prenom']
+        email = request.form['email']
+        telephone = request.form['telephone']
+        tuteur = request.form['tuteur']
+        residance = request.form['residance']
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE simplonien SET nom=%s, prenom=%s, email=%s, telephone=%s, tuteur=%s, residance=%s WHERE id=%s", (nom, prenom, email, telephone, tuteur, residance, id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('list_simplonien'))
+    
+    return render_template('upd_simplonien.html',simplonien_info=simplonien_info)
+
+@app.route('/delete_simplonien/<string:id_data>', methods=["GET"])
+def delete_simplonien(id_data):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM simplonien WHERE id=%s", [id_data])
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('list_simplonien'))
 
 
 if __name__ == "__main__":

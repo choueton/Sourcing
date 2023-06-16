@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block enfant %}
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-sm-12 col-xl-6 ">
+                <div class="bg-secondary rounded h-100 p-4 ">
+                    <h6 class="mb-4">Floating Label</h6>
+                    <form action="{{ url_for('add_simplonien') }}" method="POST" >
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="nom" required>
+                            <label for="floatingInput">Nom</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="prenom" required>
+                            <label for="floatingInput">prenom</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" required>
+                            <label for="floatingInput">email</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="telephone" required>
+                            <label for="floatingInput">telephone</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_promo" required>
+                                <option selected disabled value="">choos</option>
+                                {% for row in promo %}
+                                <option value="{{ row.0 }}">{{ row.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="floatingSelect">nom de promo</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="tuteur" required>
+                            <label for="floatingInput">tuteur</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="residance" required>
+                            <label for="floatingInput">lieu de residance</label>
+                        </div>
+                        <div class="form-floating">
+                            <button type="submit" class="btn btn-primary">enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
