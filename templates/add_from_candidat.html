@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block enfant %}
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-sm-12 col-xl-6 ">
+                <div class="bg-secondary rounded h-100 p-4 ">
+                    <h6 class="mb-4">Floating Label</h6>
+                    <form action="{{ url_for('add_candidat') }}" method="POST" >
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="nom" required>
+                            <label for="floatingInput">Nom</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="prenom" required>
+                            <label for="floatingInput">prenom</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" required>
+                            <label for="floatingInput">email</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="telephone" required>
+                            <label for="floatingInput">telephone</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="genre" required>
+                                <option selected disabled value="">choos</option>
+                                <option value="homme">homme</option>
+                                <option value="femme">femme</option>
+                            </select>
+                            <label for="floatingSelect">genre</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="nationalite" required>
+                            <label for="floatingInput">nationalite</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" name="date_naissance" required>
+                            <label for="floatingInput">date de naissance</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="lieu_residance" required>
+                            <label for="floatingInput">lieu de residance</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="ville" required>
+                            <label for="floatingInput">ville</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="statut_sociale" required>
+                            <label for="floatingInput">statut de sociale</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="diplome_actuel" required>
+                            <label for="floatingInput">diplone actule</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="specialite_etude" required>
+                            <label for="floatingInput">specialit d'etude</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="ecole" required>
+                            <label for="floatingInput">école</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_promo" required>
+                                <option selected disabled value="">choos</option>
+                                {% for row in promo %}
+                                <option value="{{ row.0 }}">{{ row.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="floatingSelect">nom de promo</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="contrainte" required>
+                            <label for="floatingInput">contrainte</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="source" required>
+                            <label for="floatingInput">qui vous a parlé de la formation</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="decision_finale" required>
+                                <option selected disabled value="">choos</option>
+                                <option value="admi">admi</option>
+                                <option value="en attente">en attente</option>
+                            </select>
+                            <label for="floatingSelect">genre</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <button type="submit" class="btn btn-primary">enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

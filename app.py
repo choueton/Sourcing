@@ -44,9 +44,56 @@ def add_from_simplonien():
     cur.close()
     return render_template('add_from_simplonien.html',promo=promo)
 
+@app.route('/add_from_candidat')
+def add_from_candidat():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM promo")
+    promo = cur.fetchall()
+    cur.close()
+    return render_template('add_from_candidat.html',promo=promo)
+
 ############################################################
 
+@app.route('/candidat')
+def list_candidat():
+    return render_template('list_candidat.html')
 
+@app.route('/add_candidat', methods=["POST"])
+def add_candidat():
+    # Obtenir les données du formulaire
+    nom = request.form['nom']
+    prenom = request.form['prenom']
+    email = request.form['email']
+    telephone = request.form['telephone']
+    genre = request.form['genre']
+    nationalite = request.form['nationalite']
+    date_naissance = request.form['date_naissance']
+    lieu_residance = request.form['lieu_residance']
+    ville = request.form['ville']
+    statut_sociale = request.form['statut_sociale']
+    diplome_actuel = request.form['diplome_actuel']
+    specialite_etude = request.form['specialite_etude']
+    ecole = request.form['ecole']
+    id_promo = request.form['id_promo']
+    contrainte = request.form['contrainte']
+    source = request.form['source']
+    decision_finale = request.form['decision_finale']
+    
+    # Établir une connexion à la base de données
+    cur = mysql.connection.cursor()
+
+    # Insérer les données dans la table 'candidat'
+    cur.execute("INSERT INTO candidat (nom, prenom, email, telephone, genre, nationalite, date_naissance, lieu_residance, ville, statut_sociale, diplome_actuel, specialite_etude, ecole, id_promo, contrainte, source, decision_finale) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (nom, prenom, email, telephone, genre, nationalite, date_naissance, lieu_residance, ville, statut_sociale, diplome_actuel, specialite_etude, ecole, id_promo, contrainte, source, decision_finale))
+
+    # Valider la transaction
+    mysql.connection.commit()
+
+    # Fermer la connexion à la base de données
+    cur.close()
+
+    # Rediriger vers la page 'candidat'
+    return redirect(url_for('list_candidat'))
 
 ############################################################
 
