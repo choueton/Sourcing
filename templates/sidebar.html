@@ -21,22 +21,57 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
+    <div class="sidebar-heading">
+        les table
+    </div>
+
     <!-- Nav Item - Tables -->
     <li class="nav-item active">
         <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
             aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span>
+            <i class="bi bi-people-fill"></i>
+            <span>sourcing</span>
         </a>
-        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo"
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Custom Components:</h6>
-                <a class="collapse-item" href="{{ url_for('list_bailleur') }}">bailleur</a>
-                <a class="collapse-item active" href="{{ url_for('list_formation') }}">formation</a>
-                <a class="collapse-item active" href="{{ url_for('list_promo') }}">promo</a>
                 <a class="collapse-item active" href="{{ url_for('list_simplonien') }}">simplonien</a>
                 <a class="collapse-item active" href="{{ url_for('list_candidat') }}">candidat</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - Tables -->
+    <li class="nav-item active">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwa" aria-expanded="true"
+            aria-controls="collapseTwo">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>emargement</span>
+        </a>
+        <div id="collapseTwa" class="collapse" aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Components:</h6>
+                <a class="collapse-item" href="#">présence</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - Tables -->
+    <li class="nav-item active">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwu" aria-expanded="true"
+            aria-controls="collapseTwo">
+            <i class="bi bi-gear-wide-connected"></i>
+            <span>configuration</span>
+        </a>
+        <div id="collapseTwu" class="collapse" aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Components:</h6>
+                <a class="collapse-item active" href="{{ url_for('list_bailleur') }}">bailleur</a>
+                <a class="collapse-item active" href="{{ url_for('list_formation') }}">formation</a>
+                <a class="collapse-item active" href="{{ url_for('list_promo') }}">promo</a>
             </div>
         </div>
     </li>

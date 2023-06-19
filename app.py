@@ -35,7 +35,6 @@ def add_from_promo():
     cur.close()
     return render_template('add_from_promo.html', formation=formation, bailleur=bailleur)
 
-
 @app.route('/add_from_simplonien')
 def add_from_simplonien():
     cur = mysql.connection.cursor()
@@ -52,11 +51,30 @@ def add_from_candidat():
     cur.close()
     return render_template('add_from_candidat.html',promo=promo)
 
+
+
+
+
 ############################################################
 
 @app.route('/candidat')
 def list_candidat():
-    return render_template('list_candidat.html')
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            candidat.id, candidat.nom, candidat.prenom, 
+            candidat.telephone, promo.nom_promo, formation.nom_formation, 
+            candidat.lieu_residance 
+        FROM 
+            promo 
+        JOIN 
+            candidat ON promo.id = candidat.id_promo 
+        JOIN 
+            formation ON formation.id = promo.id_formation
+    """)
+    data = cur.fetchall()
+    cur.close()
+    return render_template('list_candidat.html', candidat=data)
 
 @app.route('/add_candidat', methods=["POST"])
 def add_candidat():
@@ -97,6 +115,10 @@ def add_candidat():
 
 ############################################################
 
+
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -110,7 +132,7 @@ def list_bailleur():
     cur.close()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
-    per_page = 1
+    per_page = 10
     offset = (page - 1) * per_page
     cur = mysql.connection.cursor()
     cur.execute("SELECT COUNT(*) FROM bailleur")
@@ -174,7 +196,7 @@ def list_formation():
     cur.close()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
-    per_page = 1
+    per_page = 10
     offset = (page - 1) * per_page
     cur = mysql.connection.cursor()
     cur.execute("SELECT COUNT(*) FROM formation")
@@ -317,7 +339,7 @@ def list_simplonien():
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT 
-            simplonien.id, simplonien.nom, simplonien.prenom, simplonien.email, 
+            simplonien.id, simplonien.nom, simplonien.prenom, 
             simplonien.telephone, promo.nom_promo, formation.nom_formation, 
             simplonien.tuteur, simplonien.residance 
         FROM 

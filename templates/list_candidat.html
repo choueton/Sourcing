@@ -4,7 +4,7 @@
     <div class="container-xxl">
         <div class="row">
             <div class="col-md">
-                <h2>simplonien</h2>
+                <h2>candidat</h2>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
 
                   <a href="{{ url_for('add_from_candidat') }}" class="btn btn-primary btn-xs">ajoute</a>
@@ -16,17 +16,15 @@
                         <th>N°</th>
                         <th>Nom</th>
                         <th>prenom</th>
-                        <th>email</th>
                         <th>telephone</th>
                         <th>promo</th>
                         <th>formation</th>
-                        <th>tuteur</th>
                         <th>residance</th>
-                        <th>Operation</th>
+                        <th>action</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for row in simplonien %}
+                    {% for row in candidat %}
                       <tr>
                           <td>{{ row.0 }}</td>
                           <td>{{ row.1 }}</td>
@@ -35,8 +33,6 @@
                           <td>{{ row.4 }}</td>
                           <td>{{ row.5 }}</td>
                           <td>{{ row.6 }}</td>
-                          <td>{{ row.7 }}</td>
-                          <td>{{ row.8 }}</td>
                           <td>
                               <a class="btn btn-warning btn-xs" href="/upd_candidat/{{ row.0 }}">modifier</a>
                               <a href="/delete_candidat/{{ row.0 }}" class="btn btn-danger btn-xs" onclick="return confirm(' veux tu vraiment  supprimer ?')">Supprimer</a>
