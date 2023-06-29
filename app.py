@@ -54,8 +54,24 @@ def add_from_candidat():
 
 
 
+@app.route('/profil/<int:id>', methods=["GET", "POST"])
+def profil(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT candidat.nom, candidat.prenom, candidat.specialite_etude, candidat.lieu_residance, candidat.ville, 
+               candidat.email, candidat.telephone, candidat.genre, candidat.nationalite, candidat.date_naissance,
+               candidat.statut_sociale, candidat.diplome_actuel, candidat.ecole, promo.nom_promo, formation.nom_formation,
+               candidat.contrainte, candidat.source, candidat.decision_finale
+        FROM promo 
+        JOIN candidat ON promo.id = candidat.id_promo 
+        JOIN formation ON formation.id = promo.id_formation
+        WHERE candidat.id = %s""", (id,))
+    profil_info = cur.fetchall()  # Récupère toutes les lignes au lieu d'une seule
+    cur.close()
+    return render_template('profil.html', profil_info=profil_info)
 
 
+ 
 ############################################################
 
 @app.route('/candidat', methods=['GET', 'POST'])
