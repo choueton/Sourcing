@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, url_for, redirect, flash
+from flask import Flask, render_template, request, url_for, redirect, flash, url_for
 from flask_mysqldb import MySQL
 from flask_paginate import Pagination, get_page_parameter
-
+from urllib.parse import urlencode
+import openpyxl
 
 
 app = Flask(__name__)
@@ -57,24 +58,105 @@ def add_from_candidat():
 
 ############################################################
 
-@app.route('/candidat')
+@app.route('/candidat', methods=['GET', 'POST'])
 def list_candidat():
+    # Récupération de la page actuelle depuis l'URL
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+
+    # Nombre d'éléments à afficher par page
+    per_page = 10
+
+    # Définition des filtres
+    id_promo = request.form.get('id_promo')
+    id_formation = request.form.get('id_formation')
+    promo = get_nom_promo(id_promo) if id_promo else "Choose"
+    formation = get_nom_formation(id_formation) if id_formation else "Choose"
+
+    # Construction de la requête SQL en fonction des filtres
+    query = "SELECT COUNT(*) FROM promo JOIN candidat ON promo.id = candidat.id_promo JOIN formation ON formation.id = promo.id_formation"
+    condition = ""
+    params = []
+
+    if id_promo and id_formation:
+        condition = " WHERE promo.id = %s AND formation.id = %s"
+        query += condition
+        params = [id_promo, id_formation]
+        promo = get_nom_promo(id_promo)
+        formation = get_nom_formation(id_formation)
+    elif id_promo:
+        condition = " WHERE promo.id = %s"
+        query += condition
+        params = [id_promo]
+        promo = get_nom_promo(id_promo)
+        formation = "Choose"
+    elif id_formation:
+        condition = " WHERE formation.id = %s"
+        query += condition
+        params = [id_formation]
+        promo = "Choose"
+        formation = get_nom_formation(id_formation)
+
+    # Récupération du nombre total d'éléments dans la table 'candidat' en fonction des filtres
     cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT 
-            candidat.id, candidat.nom, candidat.prenom, 
-            candidat.telephone, promo.nom_promo, formation.nom_formation, 
-            candidat.lieu_residance 
-        FROM 
-            promo 
-        JOIN 
-            candidat ON promo.id = candidat.id_promo 
-        JOIN 
-            formation ON formation.id = promo.id_formation
-    """)
-    data = cur.fetchall()
+    cur.execute(query, params)
+    total_count = cur.fetchone()[0]
+
+    # Calcul de l'offset à partir de la page et du nombre d'éléments par page
+    offset = (page - 1) * per_page
+
+    # Construction de la requête SQL pour récupérer les éléments à afficher en fonction des filtres
+    query = """
+        SELECT candidat.id, candidat.nom, candidat.prenom, candidat.telephone, 
+               promo.nom_promo, formation.nom_formation, candidat.lieu_residance
+        FROM promo 
+        JOIN candidat ON promo.id = candidat.id_promo 
+        JOIN formation ON formation.id = promo.id_formation
+    """
+    if condition:
+        query += condition
+    query += " LIMIT %s OFFSET %s"
+    params = params + [per_page, offset]
+
+    # Récupération des éléments à afficher pour la page actuelle en fonction des filtres
+    cur.execute(query, params)
+    candidat_info = cur.fetchall()
+
+    # Configuration de la pagination avec le nombre total d'éléments et le nombre d'éléments par page
+    pagination = Pagination(page=page, total=total_count, per_page=per_page, css_framework='bootstrap5')
+
+    cur.execute("SELECT * FROM promo")
+    promo_info = cur.fetchall()
+
+    cur.execute("SELECT * FROM formation")
+    formation_info = cur.fetchall()
+
     cur.close()
-    return render_template('list_candidat.html', candidat=data)
+
+    # Rendu du template avec les données récupérées et la pagination
+    return render_template('list_candidat.html', promos=promo_info, formations=formation_info, candidat_info=candidat_info, pagination=pagination, promo=promo, formation=formation)
+
+
+# Correction de la fonction de récupération du nom de promo et de formation
+def get_nom_promo(id_promo):
+    if id_promo:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT nom_promo FROM promo WHERE id = %s", [id_promo])
+        nom_promo = cur.fetchone()[0]
+        cur.close()
+        return nom_promo
+    else:
+        return ""
+
+
+def get_nom_formation(id_formation):
+    if id_formation:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT nom_formation FROM formation WHERE id = %s", [id_formation])
+        nom_formation = cur.fetchone()[0]
+        cur.close()
+        return nom_formation
+    else:
+        return ""
 
 @app.route('/add_candidat', methods=["POST"])
 def add_candidat():
@@ -113,10 +195,50 @@ def add_candidat():
     # Rediriger vers la page 'candidat'
     return redirect(url_for('list_candidat'))
 
+@app.route('/import_candidat_excel', methods=['POST'])
+def import_candidat_excel():
+    if 'fichier_excel' not in request.files:
+        flash("Aucun fichier sélectionné")
+        return redirect(url_for('listeformation'))
+    fichier = request.files['fichier_excel']
+    
+    # Lecture du fichier Excel
+    wb = openpyxl.load_workbook(fichier)
+    ws = wb.active
+
+    # Extraction des données
+    data = []
+    for row in ws.iter_rows(values_only=True):
+        data.append(row)
+
+    # Connexion à la base de données
+    cur = mysql.connection.cursor()
+
+    # Insertion des données dans la table SQL
+    for row in data:
+        # Vérification de l'existence de la valeur id_promo dans la table promo
+        promo_id = row[14]  # Récupérez la valeur id_promo à partir des données
+
+        # Exécutez une requête SELECT pour vérifier si la valeur existe dans la table promo
+        select_query = "SELECT id FROM promo WHERE id = %s"
+        cur.execute(select_query, (promo_id,))
+        result = cur.fetchone()
+
+        if result:
+            # La valeur id_promo existe dans la table promo, vous pouvez insérer les données
+            query = "INSERT INTO candidat (nom, prenom, email, telephone, genre, nationalite, date_naissance, lieu_residance, ville, statut_sociale, diplome_actuel, specialite_etude, ecole, id_promo, contrainte, source, decision_finale) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cur.execute(query, (row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17]))
+        else:
+            # La valeur id_promo n'existe pas dans la table promo, vous pouvez décider de gérer cette situation en conséquence (par exemple, ignorer cette ligne ou afficher un message d'erreur)
+            print("La valeur id_promo n'existe pas dans la table promo")
+
+    # Validation et enregistrement des modifications dans la base de données
+    mysql.connection.commit()
+    cur.close()
+    flash("Importation réussie")
+    return redirect(url_for('list_candidat'))
+
 ############################################################
-
-
-
 
 
 @app.route('/')
@@ -423,7 +545,6 @@ def delete_simplonien(id_data):
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('list_simplonien'))
-
 
 if __name__ == "__main__":
     app.run(debug=True)

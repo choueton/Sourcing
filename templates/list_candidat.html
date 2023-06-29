@@ -3,47 +3,103 @@
 {% block enfant %}
     <div class="container-xxl">
         <div class="row">
-            <div class="col-md">
-                <h2>candidat</h2>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <div class="col-md">
+            <h2>candidat</h2>
 
-                  <a href="{{ url_for('add_from_candidat') }}" class="btn btn-primary btn-xs">ajoute</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div>
+                        {% for message in messages %}
+                        <i class="fa-solid fa-circle-check"> </i> {{ message }}
+                        {% endfor %}
+                    </div>
                 </div>
-               <br>
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>N°</th>
-                        <th>Nom</th>
-                        <th>prenom</th>
-                        <th>telephone</th>
-                        <th>promo</th>
-                        <th>formation</th>
-                        <th>residance</th>
-                        <th>action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {% for row in candidat %}
-                      <tr>
-                          <td>{{ row.0 }}</td>
-                          <td>{{ row.1 }}</td>
-                          <td>{{ row.2 }}</td>
-                          <td>{{ row.3 }}</td>
-                          <td>{{ row.4 }}</td>
-                          <td>{{ row.5 }}</td>
-                          <td>{{ row.6 }}</td>
-                          <td>
-                              <a class="btn btn-warning btn-xs" href="/upd_candidat/{{ row.0 }}">modifier</a>
-                              <a href="/delete_candidat/{{ row.0 }}" class="btn btn-danger btn-xs" onclick="return confirm(' veux tu vraiment  supprimer ?')">Supprimer</a>
-                          </td>
-                      </tr>
-                    {%endfor %}
-                    </tbody>
-                  </table>
+            {% endif %}
+            {% endwith %}
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <form class="card p-2" action="{{ url_for('import_candidat_excel') }}" method="POST" enctype="multipart/form-data">
+                <div class="input-group">
+                  <input type="file" class="form-control" name="fichier_excel" accept=".xlsx, .xls">
+                  <button type="submit" class="btn btn-secondary"><i class="bi bi-box-arrow-in-down-left"></i></button>
+                </div>
+              </form>
             </div>
-            <div class="pagination justify-content-center">
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <form action="{{ url_for('list_candidat') }}" method="POST">
+                
+                <div class="row row-cols-auto">
+                  <div class="col">
+                      <label for="product">Product:</label>
+                      <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_promo">
+                          <option selected disabled value="">{{promo}}</option>
+                          {% for row in promos %}
+                          <option value="{{ row.0 }}" >{{ row.1 }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+                  <div  class="col">
+                      <label for="store">Store:</label>
+                      <select class="form-select" id="floatingSelect" aria-label="Floating label select example"  name="id_formation">
+                          <option selected disabled value="">{{formation}}</option>
+                          {% for row in formations %}
+                          <option value="{{ row.0 }}">{{ row.1 }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+
+                  <div class="col">
+                    <button type="submit" class="btn btn-warning">filtre</button>
+                  </div>
+                  
+                    <div class="col">
+                        <a href="{{ url_for('list_candidat') }}" class="btn btn-secondary">Annuler le filtre</a>
+                    </div>
+                  
+                </div >
+
+              </form>
             </div>
+            
+            <br>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Nom</th>
+                  <th>prenom</th>
+                  <th>telephone</th>
+                  <th>promo</th>
+                  <th>formation</th>
+                  <th>residance</th>
+                  <th>action</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for row in candidat_info %}
+                <tr>
+                    <td>{{ row.0 }}</td>
+                    <td>{{ row.1 }}</td>
+                    <td>{{ row.2 }}</td>
+                    <td>{{ row.3 }}</td>
+                    <td>{{ row.4 }}</td>
+                    <td>{{ row.5 }}</td>
+                    <td>{{ row.6 }}</td>
+                    <td>
+                        <a class="btn btn-warning btn-xs" href="/upd_candidat/{{ row.0 }}">modifier</a>
+                        <a href="/delete_candidat/{{ row.0 }}" class="btn btn-danger btn-xs" onclick="return confirm(' veux tu vraiment  supprimer ?')">Supprimer</a>
+                    </td>
+                </tr>
+              {%endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination justify-content-center">
+            {{ pagination.links }}
+          </div>
         </div>
     </div>
 
