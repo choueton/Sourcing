@@ -61,7 +61,7 @@ def profil(id):
         SELECT candidat.nom, candidat.prenom, candidat.specialite_etude, candidat.lieu_residance, candidat.ville, 
                candidat.email, candidat.telephone, candidat.genre, candidat.nationalite, candidat.date_naissance,
                candidat.statut_sociale, candidat.diplome_actuel, candidat.ecole, promo.nom_promo, formation.nom_formation,
-               candidat.contrainte, candidat.source, candidat.decision_finale
+               candidat.contrainte, candidat.source, candidat.decision_finale, candidat.commenter
         FROM promo 
         JOIN candidat ON promo.id = candidat.id_promo 
         JOIN formation ON formation.id = promo.id_formation
@@ -242,8 +242,8 @@ def import_candidat_excel():
 
         if result:
             # La valeur id_promo existe dans la table promo, vous pouvez insérer les données
-            query = "INSERT INTO candidat (nom, prenom, email, telephone, genre, nationalite, date_naissance, lieu_residance, ville, statut_sociale, diplome_actuel, specialite_etude, ecole, id_promo, contrainte, source, decision_finale) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            cur.execute(query, (row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17]))
+            query = "INSERT INTO candidat (nom, prenom, email, telephone, genre, nationalite, date_naissance, lieu_residance, ville, statut_sociale, diplome_actuel, specialite_etude, ecole, id_promo, contrainte, source, decision_finale, commenter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cur.execute(query, (row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18]))
         else:
             # La valeur id_promo n'existe pas dans la table promo, vous pouvez décider de gérer cette situation en conséquence (par exemple, ignorer cette ligne ou afficher un message d'erreur)
             print("La valeur id_promo n'existe pas dans la table promo")
